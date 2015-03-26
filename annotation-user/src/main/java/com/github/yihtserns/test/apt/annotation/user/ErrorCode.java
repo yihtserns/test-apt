@@ -10,4 +10,8 @@ public interface ErrorCode {
 
     @MsgTemplate("Something really bad happened!")
     String SOMETHING_BAD = "00000";
+    @MsgTemplate("Nothing")
+    String NONE = null;
+    @MsgTemplate("Everything's good")
+    int OK = 99999;
 }

@@ -12,6 +12,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager.Location;
@@ -32,12 +34,11 @@ public class ErrorCodeFileGenerator extends AbstractProcessor {
             Set<? extends TypeElement> annotations,
             RoundEnvironment env) {
 
-        for (Element el : env.getElementsAnnotatedWith(MsgTemplate.class)) {
+        for (VariableElement el : ElementFilter.fieldsIn(env.getElementsAnnotatedWith(MsgTemplate.class))) {
             originatingElements.add(el);
 
             MsgTemplate msgTemplate = el.getAnnotation(MsgTemplate.class);
-            // TODO: How to get constant field's value?
-            errorCode2MsgTemplate.setProperty("???", msgTemplate.value());
+            errorCode2MsgTemplate.setProperty(String.valueOf(el.getConstantValue()), msgTemplate.value());
         }
 
         if (env.processingOver()) {
