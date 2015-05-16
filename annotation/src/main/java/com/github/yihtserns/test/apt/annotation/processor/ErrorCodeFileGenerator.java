@@ -15,6 +15,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager.Location;
 import javax.tools.StandardLocation;
@@ -38,7 +39,13 @@ public class ErrorCodeFileGenerator extends AbstractProcessor {
             originatingElements.add(el);
 
             MsgTemplate msgTemplate = el.getAnnotation(MsgTemplate.class);
-            errorCode2MsgTemplate.setProperty(String.valueOf(el.getConstantValue()), msgTemplate.value());
+            String errorCode = String.valueOf(el.getConstantValue());
+
+            if (errorCode2MsgTemplate.containsKey(errorCode)) {
+                processingEnv.getMessager().printMessage(Kind.ERROR, "Duplicate error code", el);
+            } else {
+                errorCode2MsgTemplate.setProperty(errorCode, msgTemplate.value());
+            }
         }
 
         if (env.processingOver()) {
